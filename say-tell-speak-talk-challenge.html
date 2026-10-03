@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Say, Tell, Speak, Talk Challenge</title>
+<style>
+:root{--bg:#FFF8E7;--card:#fff;--tx:#1F2937;--mu:#6B7280;--bd:#E5E7EB;--pri:#0F766E;--ok:#15803D;--okb:#DCFCE7;--no:#B91C1C;--nob:#FEE2E2;--gold:#F59E0B;--c1:#0F766E;--c2:#7C3AED;--c3:#D85A30;--c4:#D4537E;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111827;--card:#1F2937;--tx:#F3F4F6;--mu:#9CA3AF;--bd:#374151;--pri:#2DD4BF;--ok:#4ADE80;--okb:#14532D;--no:#FCA5A5;--nob:#7F1D1D}}
+:root[data-theme="dark"]{--bg:#111827;--card:#1F2937;--tx:#F3F4F6;--mu:#9CA3AF;--bd:#374151;--pri:#2DD4BF;--ok:#4ADE80;--okb:#14532D;--no:#FCA5A5;--nob:#7F1D1D}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+main{max-width:760px;margin:0 auto;padding:16px}
+h1{margin:0;font-size:26px}h2{font-size:20px;margin:28px 0 6px}p.s{color:var(--mu);margin:0 0 12px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.stats{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:8px;flex-wrap:wrap;padding:8px 0;background:var(--bg)}
+.chip{background:var(--card);border:1px solid var(--bd);border-radius:999px;padding:4px 12px;font-weight:600}
+button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;padding:8px 14px}
+button:hover:not(:disabled){border-color:var(--pri)}button:disabled{opacity:.6;cursor:default}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.fc{min-height:150px;border-radius:14px;color:#fff;padding:14px;text-align:left;border:0;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.fc b{font-size:24px}.fc small{font-size:14px;opacity:.95}
+.lv{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px 14px;margin:12px 0}
+.lv h3{margin:0 0 4px;font-size:17px}
+.q{padding:10px 0;border-top:1px solid var(--bd)}.q:first-of-type{border-top:0}
+.sent{font-size:17px;margin-bottom:8px}
+.blank{display:inline-block;min-width:70px;border-bottom:2px solid var(--mu);text-align:center;font-weight:700}
+.blank.ok{color:var(--ok);border-color:var(--ok)}
+.opts{display:flex;gap:8px;flex-wrap:wrap}
+.opts button.bad{background:var(--nob);color:var(--no);border-color:var(--no)}
+.opts button.good{background:var(--okb);color:var(--ok);border-color:var(--ok)}
+input{font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);width:150px}
+.fb{margin-top:6px;font-size:14px;min-height:20px}.fb.ok{color:var(--ok)}.fb.no{color:var(--no)}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.rule{background:var(--card);border:1px solid var(--bd);border-left:6px solid;border-radius:10px;padding:10px 12px;border-left-width:6px}
+.words{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.words button{padding:6px 10px}
+.sum{background:var(--okb);color:var(--ok);border-radius:14px;padding:16px;text-align:center;font-weight:600;margin-top:16px}
+@keyframes sh{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}.sh{animation:sh .25s}
+</style></head><body><main>
+<div class="top"><div><h1>Say, Tell, Speak, Talk</h1><p class="s" style="margin:0">Choose the right verb in the correct form</p></div><button id="th" aria-label="Switch light or dark theme">Theme</button></div>
+<div class="stats"><span class="chip">XP <b id="xp">0</b></span><span class="chip">Stars <b id="st">0</b>/5</span><span class="chip">Done <b id="dn">0</b>/<span id="tt">0</span></span></div>
+
+<h2>Step 1 · Flip and learn</h2><p class="s">Tap a card to see the rule. Tap the speaker to hear the example.</p>
+<div class="cards" id="cards"></div>
+<div class="rule" style="border-color:var(--gold);margin-top:10px"><b>Remember:</b> say + the words, tell + a person. We say "hello", but we tell <i>him</i> the truth.</div>
+
+<h2>Step 2 · Missions</h2><p class="s">Four levels. Earn XP for every first-try answer: 10 XP for choosing, 15 XP for typing.</p>
+<div id="levels"></div>
+
+<h2>Step 3 · Mistake hunt</h2><p class="s">Tap the wrong word in each sentence. 10 XP each.</p>
+<div id="hunt"></div>
+<div id="sum"></div>
+<p class="s" style="margin-top:24px;text-align:center">Good luck, language heroes!</p>
+</main>
+<script>
+var V={say:['say','says','said','saying'],tell:['tell','tells','told','telling'],speak:['speak','speaks','spoke','speaking'],talk:['talk','talks','talked','talking']};
+var COL={say:'var(--c2)',tell:'var(--c3)',speak:'var(--c4)',talk:'var(--c1)'};
+var Q=[
+["Quan, I believe what you ____.","said","say + the words, past"],
+["He ____ his name was Harbard.","said","say + the words, past"],
+["There's nothing to ____.","tell","tell news or a story"],
+["I have something important to ____.","say","say + the words"],
+["You wait and ____ that when we get there.","say","say + the words"],
+["Did they ____ you why?","tell","tell + person"],
+["But we'll not ____ any more about that now.","say","say + the words"],
+["We ____ that at the same time!","said","say + the words, past"],
+["If so, I will ____ to her.","speak","speak to someone"],
+["I'll call you tomorrow to ____ over some details.","talk","talk over = discuss"],
+["Your teacher ____ me you're a wonderful artist.","told","tell + person, past"],
+["They ____ about going to see the Squire.","said","say, past"],
+["I ____ to him tomorrow, or I go over your head.","speak","speak to someone"],
+["I have sworn to ____ the truth.","tell","tell the truth"],
+["I'd like to ____ something.","say","say + the words"],
+["Julia ____, will you come and dine on Sunday?","says","say + the words, present"],
+["You can only ____.","talk","talk = have a conversation"],
+["First I hide, then I ____ Lithuanian.","speak","speak + a language"],
+["Oh, it was just something John ____ as a joke.","said","say + the words, past"],
+["What did you ____ to me, Potter?","say","say + the words"],
+["But my son, I am sorry to ____, confirmed her story.","say","sorry to say"],
+["And yet, strictly ____, I know him least of all.","speaking","strictly speaking"],
+["They ____ they was FBI.","said","say + the words, past"]];
+var LV=[[0,6,'Level 1 · Warm-up',1],[6,12,'Level 2 · Getting better',1],[12,18,'Level 3 · Type it',0],[18,23,'Level 4 · Expert',0]];
+var H=[["She said me a secret.",1,"told","tell + person"],["I talk English at home.",1,"speak","speak + a language"],["He told hello to the teacher.",1,"said","say + the words"],["We told about the exam.",1,"talked","talk about a topic"],["Can you say me the time?",2,"tell","tell + person"]];
+var S={xp:0,done:0,first:0,lvDone:{},hunt:0},TOT=Q.length+H.length,qs=[];
+function $(i){return document.getElementById(i)}
+function say(t){try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.9;speechSynthesis.speak(u)}catch(e){}}
+function upd(){$('xp').textContent=S.xp;$('dn').textContent=S.done;$('tt').textContent=TOT;
+ var st=Object.keys(S.lvDone).length+(S.hunt==H.length?1:0);$('st').textContent=st;
+ if(S.done==TOT)$('sum').innerHTML='<div class="sum">All done! First-try score: '+S.first+'/'+TOT+' · '+S.xp+' XP · '+st+' stars<br><button onclick="location.reload()" style="margin-top:8px">Play again</button></div>'}
+var EX={say:'He said hello to his teacher.',tell:'She told me the truth.',speak:'Do you speak English?',talk:'We talked about the match.'};
+var RU={say:'say + the words or message',tell:'tell + a person; a story, the time, the truth',speak:'speak + a language; speak to someone',talk:'talk to a person; talk about a topic'};
+Object.keys(V).forEach(function(k){var b=document.createElement('button');b.className='fc';b.style.background=COL[k];var f=0;
+ function show(){b.innerHTML=f?'<small>'+RU[k]+'</small><small><i>'+EX[k]+'</i></small><span role="button" onclick="event.stopPropagation();say(\''+EX[k]+'\')" style="font-size:14px">Listen</span>':'<b>'+k+'</b><small>'+V[k].join(' · ')+'</small><small>Tap to flip</small>'}
+ b.onclick=function(){f=!f;show()};show();$('cards').appendChild(b)});
+function fillBlank(i,w,ok){var q=qs[i];q.blank.textContent=w;q.blank.className='blank ok'}
+function finish(i,first,pts,msg){var q=qs[i];if(q.d)return;q.d=1;S.done++;if(first){S.first++;S.xp+=pts}
+ q.fb.className='fb ok';q.fb.textContent=(first?'Correct! +'+pts+' XP · ':'Answer: '+Q[i][1]+' · ')+Q[i][2];fillBlank(i,Q[i][1]);
+ q.el.querySelectorAll('button,input').forEach(function(x){x.disabled=true});
+ say(Q[i][0].replace('____',Q[i][1]));
+ var L=LV.filter(function(l){return i>=l[0]&&i<l[1]})[0];
+ if(qs.slice(L[0],L[1]).every(function(x){return x.d}))S.lvDone[L[2]]=1;upd()}
+function wrong(i,el){var q=qs[i];q.t++;(el||q.box).classList.add('sh');setTimeout(function(){(el||q.box).classList.remove('sh')},300);
+ q.fb.className='fb no';q.fb.textContent=q.t>1?'Hint: '+Q[i][2]:'Not quite. Try again!'}
+LV.forEach(function(L){var d=document.createElement('div');d.className='lv';d.innerHTML='<h3>'+L[2]+'</h3>';
+ for(var i=L[0];i<L[1];i++)(function(i){var q={t:0,d:0},el=document.createElement('div');el.className='q';
+  var p=Q[i][0].split('____');el.innerHTML='<div class="sent">'+(i+1)+'. '+p[0]+'<span class="blank">&nbsp;&nbsp;&nbsp;</span>'+p[1]+'</div>';
+  q.el=el;q.blank=el.querySelector('.blank');q.box=el;var fb=document.createElement('div');fb.className='fb';q.fb=fb;
+  if(L[3]){var ans=Q[i][1],vk=Object.keys(V).filter(function(k){return V[k].indexOf(ans)>-1})[0],fi=V[vk].indexOf(ans),
+   o=Object.keys(V).map(function(k){return V[k][fi]});o.sort(function(a,b){return a<b?-1:1});
+   var w=document.createElement('div');w.className='opts';o.forEach(function(x){var b=document.createElement('button');b.textContent=x;
+    b.onclick=function(){if(q.d)return;if(x==ans){b.className='good';finish(i,q.t==0,10)}else{b.className='bad';b.disabled=true;wrong(i,b)}};w.appendChild(b)});el.appendChild(w)}
+  else{var w=document.createElement('div');w.className='opts';var inp=document.createElement('input');inp.placeholder='Type the verb';inp.setAttribute('aria-label','Answer '+(i+1));
+   var b=document.createElement('button');b.textContent='Check';
+   function go(){var v=inp.value.trim().toLowerCase();if(!v||q.d)return;if(v==Q[i][1])finish(i,q.t==0,15);else{wrong(i,inp);if(q.t>=3)finish(i,false,0)}}
+   b.onclick=go;inp.onkeydown=function(e){if(e.key=='Enter')go()};w.appendChild(inp);w.appendChild(b);el.appendChild(w)}
+  el.appendChild(fb);qs[i]=q;d.appendChild(el)})(i);$('levels').appendChild(d)});
+H.forEach(function(h,n){var d=document.createElement('div');d.className='lv';var ws=h[0].split(' '),f=document.createElement('div');f.className='fb';
+ d.innerHTML='<div class="sent">'+(n+1)+'. Which word is wrong?</div>';var wd=document.createElement('div');wd.className='words';var done=0,t=0;
+ ws.forEach(function(w,j){var b=document.createElement('button');b.textContent=w;b.onclick=function(){if(done)return;
+  if(j==h[1]){done=1;b.className='good';b.style.cssText='background:var(--okb);color:var(--ok);border-color:var(--ok)';if(!t){S.xp+=10;S.first++}S.done++;S.hunt++;
+   f.className='fb ok';f.textContent=(t?'':'Correct! +10 XP · ')+'Use "'+h[2]+'": '+h[3];say(h[0].replace(w,h[2]));upd()}
+  else{t++;wd.classList.add('sh');setTimeout(function(){wd.classList.remove('sh')},300);f.className='fb no';f.textContent='Not that one. Look at the verb!'}};wd.appendChild(b)});
+ d.appendChild(wd);d.appendChild(f);$('hunt').appendChild(d)});
+$('th').onclick=function(){var r=document.documentElement,dk=r.dataset.theme?r.dataset.theme=='dark':matchMedia('(prefers-color-scheme: dark)').matches;r.dataset.theme=dk?'light':'dark'};
+upd();
+</script></body></html>
